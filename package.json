@@ -1,0 +1,33 @@
+{
+  "name": "node-apk-parser",
+  "description": "Extract Android Manifest info from an APK file.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/arthur-zhang/node-apk-parser",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arthur-zhang/node-apk-parser"
+  },
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node install.js"
+  },
+  "keywords": [
+    "android",
+    "apk"
+  ],
+  "_id": "node-apk-parser@0.1.0",
+  "_npmUser": {
+    "name": "zhangya_no1",
+    "email": "zhangya_no1@qq.com"
+  },
+  "maintainers": [
+    {
+      "name": "zhangya_no1",
+      "email": "zhangya_no1@qq.com"
+    }
+  ]
+}
