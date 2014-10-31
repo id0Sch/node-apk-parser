@@ -1,104 +1,135 @@
-# Note
+#node-apk-parser
+based on **adbkit-apkreader**, add meta data parse feature
 
-this is the the fixed/improved version of [node-apk-parser](https://github.com/rubenv/node-apk-parser)
-
-# apk-parser - Android apk-file parser
-
-> Extract Android Manifest info from an APK file.
-
-[![Build Status](https://travis-ci.org/rubenv/node-apk-parser.png?branch=master)](https://travis-ci.org/rubenv/node-apk-parser)
-
-While there are some implementations for this out in the wild, none of them handle all of the intricacies of the APK file-format. This module uses the `aapt` tool from the Android SDK to solve that problem. The tool will be downloaded and installed during `npm install`. Tested on Linux and OS X.
+**node-apk-parser** provides a [Node.js](http://nodejs.org/) API for extracting information from Android APK files. For example, it allows you to read the `AndroidManifest.xml` of an existing APK file.
 
 ## Getting started
 
-Add apk-parser to your project: `npm install --save apk-parser`.
+Install via NPM:
 
-Sample usage:
+```bash
+npm install --save node-apk-parser
+```
+### Examples
 
-```js
-var parseApk = require('apk-parser');
-parseApk('myApkFile.apk', function (err, data) {
-    // Handle error or do something with data.
-});
+#### Read the `AndroidManifest.xml` of an APK
+
+```javascript
+var util = require('util')
+var ApkReader = require('adbkit-apkreader')
+
+var reader = ApkReader.readFile('HelloApp.apk')
+var manifest = reader.readManifestSync()
+
+console.log(util.inspect(manifest, { depth: null }))
 ```
 
-The returned data object is an object-representation of the `AndroidManifest.xml` file. Here's a sample file:
+## API
 
-```js
-{
-    "manifest": [
-        {
-            "@package": "com.example.android.snake",
-            "uses-permission": [
-                {
-                    "@android:name": "android.permission.INTERNET"
-                }
-            ],
-            "application": [
-                {
-                    "@android:label": "Snake on a Phone",
-                    "activity": [
-                        {
-                            "@android:theme": "@0x1030006",
-                            "@android:name": "Snake",
-                            "@android:screenOrientation": 1,
-                            "@android:configChanges": "(type 0x11)0xa0",
-                            "intent-filter": [
-                                {
-                                    "action": [
-                                        {
-                                            "@android:name": "android.intent.action.MAIN"
-                                        }
-                                    ],
-                                    "category": [
-                                        {
-                                            "@android:name": "android.intent.category.LAUNCHER"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
+### ApkReader
+
+#### ApkReader.readFile(file)
+
+Alternate syntax to manually creating an ApkReader instance. Currently, only files are supported, but support for streams might be added at some point.
+
+* **file** The path to the APK file.
+* Throws: `Error` on error (e.g. if the file is not valid)
+* Returns: An `ApkReader` instance.
+
+#### constructor(file)
+
+Manually construct an `ApkReader` instance. Useful for testing and/or playing around. Normally you would use `ApkReader.readFile(file)` to create the instance.
+
+* **file** The path to the APK file.
+* Throws: `Error` on error (e.g. if the file is not valid)
+* Returns: N/A
+
+#### reader.readManifestSync()
+
+Synchronously reads and parses the `AndroidManifest.xml` file inside the APK and returns a simplified object representation of it.
+
+* Throws: `Error` (e.g. if parsing was unsuccessful)
+* Returns: A JavaScript `Object` representation of the manifest. See example output below:
+
+```javascript
+{ versionCode: 1,
+  versionName: '1.0',
+  package: 'com.cvte.sdk.update',
+  usesPermissions: [],
+  permissions: [],
+  permissionTrees: [],
+  permissionGroups: [],
+  instrumentation: null,
+  usesSdk: { minSdkVersion: 14, targetSdkVersion: 20 },
+  usesConfiguration: null,
+  usesFeatures: [],
+  supportsScreens: null,
+  compatibleScreens: [],
+  supportsGlTextures: [],
+  application: 
+   { theme: 'resourceId:0x7f060000',
+     label: 'resourceId:0x7f050001',
+     icon: 'resourceId:0x7f020000',
+     debuggable: true,
+     allowBackup: true,
+     activities: 
+      [ { label: 'resourceId:0x7f050001',
+          name: 'com.cvte.sdk.update.MyActivity',
+          intentFilters: 
+           [ { actions: [ { name: 'android.intent.action.MAIN' } ],
+               categories: [ { name: 'android.intent.category.LAUNCHER' } ],
+               data: [] } ],
+          metaData: [] },
+        { theme: 'resourceId:0x1030071',
+          name: 'com.cvte.sdk.update.UpdateDialogActivity',
+          intentFilters: [],
+          metaData: [] } ],
+     activityAliases: [],
+     launcherActivities: 
+      [ { label: 'resourceId:0x7f050001',
+          name: 'com.cvte.sdk.update.MyActivity',
+          intentFilters: 
+           [ { actions: [ { name: 'android.intent.action.MAIN' } ],
+               categories: [ { name: 'android.intent.category.LAUNCHER' } ],
+               data: [] } ],
+          metaData: [] } ],
+     services: [],
+     receivers: [],
+     providers: [],
+     usesLibraries: [],
+     metaDatas: 
+      [ { name: 'MENGYOU_APPKEY',
+          value: 'a41a4a18b9a1808e4b88f8beea2ddfd1870866c3' } ] } }
 ```
 
-Things to note:
+#### reader.readXmlSync(path)
 
-* The top-level element is a key named `manifest`.
-* Attributes are encoded by prepending their name with `@`.
-* Child nodes can be accessed by name. The value is always an array, as there might be more than one array.
-* This representation is unaware of the meaning of this file (you might know that there will always only be one `application` tag, the module does not). This make sure that it never breaks with future Android releases.
+Synchronously reads and parses the binary XML file at the given path inside the APK file. Attempts to be somewhat compatible with the DOM API.
 
-## Contributing
-All code lives in the `src` folder and is written in CoffeeScript. Try to stick to the style conventions used in existing code.
+* **path** The path to the binary XML file inside the APK. For example, giving `AndroidManifest.xml` as the path would parse the manifest (but you'll probably want to use `reader.readManifestSync()` instead).
+* Throws: `Error` (e.g. if parsing was unsuccessful)
+* Returns:  A JavaScript `Object` representation of the root node of the XML file. All nodes including the root node have the following properties:
+    - **namespaceURI** The namespace URI or `null` if none.
+    - **nodeType** `1` for element nodes, `2` for attribute nodes, and `4` for CData sections.
+    - **nodeName** The node name.
+    - For element nodes, the following additional properties are present:
+        * **attributes** An array of attribute nodes.
+        * **childNodes** An array of child nodes.
+    - For attribute nodes, the following additional properties are present:
+        * **name** The attribute name.
+        * **value** The attribute value, if possible to represent as a simple value.
+        * **typedValue** May be available when the attribute represents a complex value. See [android.util.TypedValue](http://developer.android.com/reference/android/util/TypedValue.html) for more information. Has the following properties:
+            - **value** The value, which might `null`, `String`, `Boolean`, `Number` or even an `Object` for the most complex types.
+            - **type** A `String` representation of the type of the value.
+            - **rawType** A raw integer presentation of the type of the value.
+    - For CData nodes, the following additional properties are present:
+        * **data** The CData.
+        * **typedValue** May be available if the section represents a more complex type. See above for details.
 
-Tests can be run using `grunt test`. A convenience command to automatically run the tests is also available: `grunt watch`. Please add test cases when adding new functionality: this will prove that it works and ensure that it will keep working in the future.
-    
-## License 
+## More information
 
-    (The MIT License)
-
-    Copyright (C) 2013 by Ruben Vermeersch <ruben@savanne.be>
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
+* [android.util.TypedValue](http://developer.android.com/reference/android/util/TypedValue.html) For more information about value types.
+* [Dong Liu's excellent Java-based APK parser](https://github.com/xiaxiaocao/apk-parser), which was used as a reference implementation.
+* [A detailed blog port about Android's binary XML format](http://justanapplication.wordpress.com/category/android/android-binary-xml/)
+* [Stackoverflow discussion about the topic](http://stackoverflow.com/questions/2097813/how-to-parse-the-androidmanifest-xml-file-inside-an-apk-package)
+* [android-apktool](https://code.google.com/p/android-apktool/) The most advanced CLI/Java-based APK tool.

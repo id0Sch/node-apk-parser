@@ -1,25 +1,41 @@
 {
   "name": "node-apk-parser",
-  "description": "Extract Android Manifest info from an APK file.",
-  "version": "0.1.0",
-  "homepage": "https://github.com/arthur-zhang/node-apk-parser",
+  "version": "0.2.1",
+  "description": "Extracts information from APK files.",
+  "keywords": [
+    "adb",
+    "adbkit",
+    "android",
+    "apk",
+    "manifest",
+    "AndroidManifest"
+  ],
+  "bugs": {
+    "url": "https://github.com/arthur-zhang/node-apk-parser/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Arthur Zhang",
+    "email": "zhangya_no1@qq.com"
+  },
+  "main": "./index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/arthur-zhang/node-apk-parser"
   },
-  "main": "lib/index.js",
+  "scripts": {},
+  "dependencies": {
+    "adm-zip": "~0.4.4",
+    "debug": "~0.7.4"
+  },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10.4"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "node install.js"
-  },
-  "keywords": [
-    "android",
-    "apk"
-  ],
-  "_id": "node-apk-parser@0.1.0",
+  "homepage": "https://github.com/arthur-zhang/node-apk-parser",
+  "_id": "node-apk-parser@0.2.0",
+  "_shasum": "22df85963838c2a4123b4a1695ade8a3831203ea",
+  "_from": "node-apk-parser@0.2.0",
+  "_npmVersion": "1.4.28",
   "_npmUser": {
     "name": "zhangya_no1",
     "email": "zhangya_no1@qq.com"
@@ -29,5 +45,12 @@
       "name": "zhangya_no1",
       "email": "zhangya_no1@qq.com"
     }
-  ]
+  ],
+  "dist": {
+    "shasum": "22df85963838c2a4123b4a1695ade8a3831203ea",
+    "tarball": "http://registry.npmjs.org/node-apk-parser/-/node-apk-parser-0.2.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/node-apk-parser/-/node-apk-parser-0.2.0.tgz",
+  "gitHead": "a15180d36639057ea373f298400233dd1506b591"
 }
