@@ -16,7 +16,7 @@ npm install --save node-apk-parser
 
 ```javascript
 var util = require('util')
-var ApkReader = require('adbkit-apkreader')
+var ApkReader = require('node-apk-parser')
 
 var reader = ApkReader.readFile('HelloApp.apk')
 var manifest = reader.readManifestSync()
